@@ -1,0 +1,38 @@
+//
+//  ProxySettingTool.h
+//  com.clashfx.app.Helper
+//
+//  Created by yichengchen on 2019/8/17.
+//  Copyright © 2019 west2online. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface ProxySettingTool : NSObject
+
+- (void)enableProxyWithport:(int)port socksPort:(int)socksPort
+                     pacUrl:(NSString *)pacUrl
+            filterInterface:(BOOL)filterInterface
+                 ignoreList:(NSArray<NSString *>*)ignoreList;
+
+- (void)disableProxyWithfilterInterface:(BOOL)filterInterFace;
+
+- (void)restoreProxySetting:(NSDictionary *)savedInfo
+                currentPort:(int)port
+           currentSocksPort:(int)socksPort
+            filterInterface:(BOOL)filterInterface;
++ (NSMutableDictionary<NSString *,NSDictionary *> *)currentProxySettings;
+
+- (void)overrideDNSWithServers:(NSArray<NSString *> *)servers
+               filterInterface:(BOOL)filterInterface;
+
+- (void)restoreDNS:(NSDictionary *)savedInfo
+    filterInterface:(BOOL)filterInterface;
+
++ (NSMutableDictionary<NSString *,NSDictionary *> *)currentDNSSettings;
+
+@end
+
+NS_ASSUME_NONNULL_END

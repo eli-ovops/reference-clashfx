@@ -1,0 +1,683 @@
+### Bug Fixes
+
+- **Enhanced Mode Now Detects Silent Data-Plane Failures** — Runtime monitoring now verifies the core's DIRECT outbound path and DNS resolution in addition to the controller and TUN interface. Three confirmed core-only failures trigger a bounded rebuild, while unavailable system connectivity is treated as inconclusive to avoid restart loops. (#147)
+- **Recovery Captures Evidence Before Restarting the Core** — Every external-core launch now has a unique capped log, launch and termination metadata, and an on-demand process sample. Automatic recovery records this evidence before rebuilding, and a failed startup can restart the Helper host once instead of leaving a stale external core behind. (#147)
+- **Proxy and Rules Views Survive Brief Core Interruptions** — The menu and Dashboard preserve their last valid proxy/rules snapshot when the local controller is temporarily unavailable. The Dashboard clearly marks cached rules as stale instead of showing an empty page, so a recovery no longer looks like the user's rules disappeared. (#147)
+
+### Contributors
+
+- @a51095 — Reported that long-running Enhanced Mode could partially stop loading external sites and recover only after restarting ClashFX. (#147)
+
+---
+
+### 修复
+
+- **增强模式现在可识别数据面的静默失效** — 运行时监控除了检查控制接口和 TUN 网卡，还会验证核心的 DIRECT 出站链路及 DNS 解析。仅当系统直连正常且核心连续三次失败时才会执行有界重建；系统网络本身不可用时会视为无法判定，避免反复重启。 (#147)
+- **重启核心前会先保留诊断证据** — 每次外部核心启动现在都有独立且受容量限制的日志、启动与退出元数据，以及按需进程采样。自动恢复会先记录这些证据再重建；启动失败时也可仅重启一次 Helper 宿主，避免残留外部核心持续阻塞。 (#147)
+- **核心短暂中断时代理与规则界面不再清空** — 本地控制接口暂时不可用时，菜单与控制台会保留最后一次有效的代理和规则快照。控制台会明确提示当前展示的是旧规则，不会再以空白页面表现为“规则消失”。 (#147)
+
+### 贡献者
+
+- @a51095 — 反馈增强模式长时间运行后外部网站可能只能部分加载，必须重启 ClashFX 才恢复的问题。 (#147)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Large Delay Tests No Longer Trigger Enhanced Mode Restarts** — Manual benchmarks now share a bounded eight-request queue, cancel cleanly before recovery, and use control-plane health thresholds that tolerate short load spikes. Testing a large proxy group can no longer starve the controller and make ClashFX rebuild a healthy core. The default benchmark endpoint also uses HTTPS, with existing default settings migrated automatically.
+- **Helper Upgrades No Longer Loop or Race App Startup** — ClashFX now compares the bundled and installed Helper reliably, gives privileged operations enough time to finish, validates connecting clients, and keeps the Helper alive briefly while the app reconnects. Startup waits for Helper cleanup before restoring Enhanced Mode, preventing repeated installer prompts and transient “Helper unavailable” failures.
+- **Network Restoration Cannot Freeze Relaunch** — DNS restoration and cache flushing now have strict watchdogs, so a slow system command cannot stall ClashFX for minutes. If an older restore finishes late, the active proxy DNS settings are reapplied instead of being overwritten.
+
+---
+
+### 修复
+
+- **大批量延迟测速不再触发增强模式重启** — 手动测速现在统一使用最多八个并发请求的队列，恢复前会取消仍在进行的测速，并采用可容忍短时负载峰值的控制面健康阈值。测试大型策略组时不会再因控制接口被挤占而误判并重建健康核心。默认测速地址也已改为 HTTPS，旧的默认设置会自动迁移。
+- **Helper 升级不再反复弹窗或与应用启动竞争** — ClashFX 现在会可靠比较内置与已安装的 Helper，为特权操作保留充足完成时间，校验连接客户端，并在应用重连期间让 Helper 短暂保持运行。启动时会先等待 Helper 清理残留核心，再恢复增强模式，避免安装程序重复弹出及瞬时“Helper 不可用”失败。
+- **网络恢复不会再卡住应用重启** — DNS 恢复与缓存刷新现在都有严格的超时保护，缓慢的系统命令不会让 ClashFX 卡住数分钟。若旧恢复任务延迟完成，应用会重新应用当前代理 DNS 设置，避免覆盖正在使用的网络配置。
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Enhanced Mode Startup Errors Are Now Actionable** — Failed Enhanced Mode toggles now show a prominent error dialog even when reduced notifications are enabled. Invalid TUN route-exclude entries are identified directly, with guidance to separate entries correctly and a shortcut to open Settings. (#190)
+
+### Contributors
+
+- @ljssafe — Reported that Enhanced Mode appeared to do nothing when an invalid TUN route-exclude entry prevented startup. (#190)
+
+---
+
+### 修复
+
+- **增强模式启动错误现在会明确提示并引导修正** — 增强模式切换失败时会直接显示醒目的错误弹窗，即使启用了“减少通知”也不会被隐藏。若 TUN 路由排除项格式无效，弹窗会指出具体条目、说明正确的分隔方式，并提供打开设置的快捷入口。 (#190)
+
+### 贡献者
+
+- @ljssafe — 反馈无效的 TUN 路由排除项导致增强模式无法启动，但界面看起来没有任何反应的问题。 (#190)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Automatic Groups Re-evaluate After Manual Delay Tests** — Completing a manual delay benchmark now triggers each affected `url-test` group to test its candidates again with the group's own URL and expected status. Stale selections are refreshed while Mihomo's configured `tolerance` continues to prevent unnecessary switching from small latency changes. (#147)
+
+### Contributors
+
+- @a51095 — Reported that Automatic Selection could keep an older candidate after a manual delay test found faster nodes. (#147)
+
+---
+
+### 修复
+
+- **手动延迟测速后会重新评估自动策略组** — 手动测速完成后，相关 `url-test` 策略组会使用各自配置的测速地址和预期状态重新测试候选节点；旧选择会及时刷新，同时继续保留 Mihomo 的 `tolerance` 容差，避免因细微延迟波动频繁切换。 (#147)
+
+### 贡献者
+
+- @a51095 — 反馈手动延迟测速发现更快节点后，自动选择仍可能保留旧候选节点的问题。 (#147)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **System Proxy Bypass Changes Apply Immediately** — Editing the bypass list now reapplies the active macOS System Proxy settings and reloads the standard-mode runtime rules without requiring a proxy toggle or app restart. The settings copy also clarifies that Enhanced Mode bypasses belong in Profile Mixin. (#182)
+- **TUN Interface Error Storms Recover Automatically** — Repeated interface auto-detection failures are grouped and rate-limited before file logging, and a sustained error storm now triggers an Enhanced Mode rebuild instead of consuming CPU and growing logs indefinitely. (#183)
+- **Dashboard Version Indicators No Longer Suggest Unsupported Updates** — ClashFX now removes the upstream update dots, disables the bundled Dashboard's version actions, and explains that Dashboard and core updates are managed by ClashFX releases. (#184)
+- **Outbound Mode No Longer Changes Unexpectedly** — Removed the default global `⌥D`, `⌥R`, and `⌥G` bindings that could switch ClashFX from other apps. Upgrades clear only bindings that still match those legacy defaults, while preserving other custom shortcuts. (#179)
+- **The Last Mode Choice Now Wins Reliably** — Outbound-mode changes are serialized, persisted only after the core accepts them, and verified against the core's actual mode. Config reloads and stale state reads can no longer overwrite the user's latest choice, and logs now record each change source and result. (#179)
+
+### Contributors
+
+- @hackerslizc — Reported that System Proxy bypass changes did not take effect for Codex-related traffic. (#182)
+- @mumaxiaozi — Reported the high-energy TUN log storm and the misleading Dashboard/core update indicators. (#183, #184)
+- @Ha-cyber — Reported and diagnosed the intermittent switch from Rule mode to Direct mode. (#179)
+
+---
+
+### 修复
+
+- **系统代理绕过规则会立即生效** — 编辑绕过列表后会立刻重新应用当前 macOS 系统代理设置，并在标准模式下重载运行时规则，无需切换代理或重启应用；设置文案也明确提示增强模式应使用 Profile Mixin 配置绕过。 (#182)
+- **TUN 接口错误刷屏会自动恢复** — 接口自动检测失败会在写入文件前按类别限流；持续刷屏时会自动重建增强模式，避免 CPU 占用升高及日志无限增长。 (#183)
+- **控制台版本提示不再误导用户升级** — ClashFX 会移除上游控制台的更新圆点、禁用内置控制台中的版本操作，并明确说明控制台与核心由 ClashFX 版本统一管理。 (#184)
+- **出站模式不再意外切换** — 移除可能在其他应用中误触并切换 ClashFX 的默认全局快捷键 `⌥D`、`⌥R` 和 `⌥G`；升级时只清除仍与旧默认值相同的绑定，其他自定义快捷键保持不变。 (#179)
+- **最后一次模式选择会可靠生效** — 出站模式切换现在会串行执行，仅在核心确认成功后保存，并再次核对核心实际模式；配置重载及过期状态读取不再覆盖用户最后一次选择，日志也会记录每次切换的来源与结果。 (#179)
+
+### 贡献者
+
+- @hackerslizc — 反馈 Codex 相关流量的系统代理绕过规则修改后未生效的问题。 (#182)
+- @mumaxiaozi — 反馈 TUN 日志刷屏导致高能耗，以及控制台/核心更新提示容易误解的问题。 (#183, #184)
+- @Ha-cyber — 反馈并协助定位规则模式偶发切换为直接连接的问题。 (#179)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Enhanced Mode Recovers From a Closed TUN Read Loop** — The bundled core now treats macOS `ENOTSOCK` as a closed connection, while ClashFX detects the fatal TUN read error and rebuilds Enhanced Mode instead of leaving traffic disconnected. (#147)
+- **Core Error Floods No Longer Exhaust Resources** — Repeated core messages are rate-limited in the app, and the privileged helper caps the core log at 4 MB so a broken read loop cannot drive unbounded CPU, memory, or disk usage. (#147)
+- **Helper Upgrades and Reconnects Are More Reliable** — ClashFX now reuses and safely resets its XPC connection, waits for helper readiness before cleaning stale cores, and replaces an outdated running helper before restoring Enhanced Mode. (#147)
+
+### Contributors
+
+- @a51095 — Reported the long-running Enhanced Mode disconnection and the CPU and memory spike during recovery. (#147)
+
+---
+
+### 修复
+
+- **增强模式可从 TUN 读取循环失效中恢复** — 内置核心现在会将 macOS 的 `ENOTSOCK` 识别为连接已关闭；ClashFX 检测到致命 TUN 读取错误后会重建增强模式，避免流量持续断开。 (#147)
+- **核心错误刷屏不再耗尽系统资源** — 应用会限制重复核心日志的写入频率，特权 Helper 同时将核心日志限制在 4 MB，避免异常读取循环造成 CPU、内存或磁盘占用持续增长。 (#147)
+- **Helper 升级与重连更加可靠** — ClashFX 现在会复用并安全重置 XPC 连接，等待 Helper 就绪后再清理残留核心，并在恢复增强模式前替换仍在运行的旧版 Helper。 (#147)
+
+### 贡献者
+
+- @a51095 — 反馈增强模式长时间运行后断连，以及恢复期间 CPU 和内存占用暴涨的问题。 (#147)
+
+<!-- Previous release notes -->
+
+---
+
+### Improvements
+
+- **Delay Benchmarks Avoid Duplicate Work** — Manual delay tests now benchmark each actual leaf proxy once, use provider-specific checks for provider nodes, and cap concurrency to avoid nested policy groups producing duplicate requests and unstable first-run results. (#147)
+- **Connection Details Can Copy the Destination Directly** — A new copy button beside the destination copies the hostname when available, or the destination IP otherwise, without the port number so it can be pasted directly into custom rules. (#147)
+
+### Contributors
+
+- @a51095 — Reported the repeated first-run delay spike and suggested copying the destination without its port from connection details. (#147)
+
+---
+
+### 改进
+
+- **延迟测速不再重复测试节点** — 手动延迟测速现在只测试一次每个实际叶子节点，对代理提供者节点使用对应测速接口，并限制并发数量，避免嵌套策略组产生重复请求及首次结果不稳定。 (#147)
+- **连接详情可直接复制目标地址** — 目标地址旁新增复制按钮：有域名时复制域名，否则复制目标 IP；复制结果不含端口号，可直接用于自定义规则。 (#147)
+
+### 贡献者
+
+- @a51095 — 反馈首次延迟测速反复偏高的问题，并建议在连接详情中复制不含端口的目标地址。 (#147)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Enhanced Mode Recovers Its TUN Data Path After Wake** — Wake and network-change recovery now validates both the mihomo API and the active TUN interface. If the control API is alive but TUN has disappeared or reports disabled, ClashFX stops the stale external core and rebuilds Enhanced Mode instead of leaving the menu in a false-on state. (#142, #147)
+- **A Stuck Core No Longer Blocks Restart** — The privileged helper now gives mihomo a short graceful-shutdown window, then force-terminates it when necessary so Enhanced Mode recovery and ClashFX restart cannot wait forever on an unresponsive process. (#147)
+
+### Contributors
+
+- @a51095 — Reported the long-running Enhanced Mode failure and the restart behavior that required force-quitting ClashFX. (#147)
+
+---
+
+### 修复
+
+- **睡眠唤醒后会恢复增强模式的 TUN 数据链路** — 唤醒及网络变化后的恢复现在会同时检查 Mihomo API 与实际 TUN 接口；如果控制接口仍有响应，但 TUN 已消失或已关闭，ClashFX 会停止失活的外部核心并重建增强模式，不再让菜单停留在“已开启”的假状态。 (#142, #147)
+- **核心卡死不再阻塞重启** — 特权 Helper 会先给 Mihomo 短暂的正常退出时间，超时后强制终止，避免增强模式恢复或 ClashFX 重启一直等待无响应的进程。 (#147)
+
+### 贡献者
+
+- @a51095 — 反馈增强模式长时间运行后失效，以及必须强退 ClashFX 才能恢复的问题。 (#147)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Global Shortcuts No Longer Override Standard macOS Commands** — Removed the default global bindings for Command-S, Command-D, Command-L, and Shift-Command-D. Existing bindings that still match those former defaults are cleared once during upgrade, while other custom shortcuts remain unchanged. (#169)
+
+### Contributors
+
+- @flydog-ai — Reported and traced the unsafe default global shortcuts. (#169)
+
+---
+
+### 修复
+
+- **全局快捷键不再覆盖 macOS 常用命令** — 移除 `Command-S`、`Command-D`、`Command-L` 和 `Shift-Command-D` 的默认全局绑定；升级时会一次性清除仍与这些旧默认值相同的绑定，其他自定义快捷键保持不变。 (#169)
+
+### 贡献者
+
+- @flydog-ai — 反馈并定位了不安全的默认全局快捷键。 (#169)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Managed Config Table Fits Its Contents** — The managed-config window now reserves enough room for the update-time column on its first display, without requiring a manual window resize. (#147)
+- **Configurable Delay-Test Shortcut** — Delay tests can now be assigned a global shortcut in Settings. It has no default binding, so it will not conflict with existing shortcuts. (#147)
+- **iCloud Storage Fails Safely** — Enabling iCloud-backed config storage now warns and restores the local-storage setting when iCloud is unavailable. (#147)
+
+### Contributors
+
+- @a51095 — Reported the managed-config layout, delay-test shortcut, and unavailable-iCloud behaviors. (#147)
+
+---
+
+### 修复
+
+- **托管配置表格初始显示正常** — 托管配置窗口首次打开时会为“更新时间”列保留足够空间，无需手动缩放窗口。 (#147)
+- **可配置的延迟测速快捷键** — 现在可在设置中为延迟测速设置全局快捷键；默认不绑定组合键，避免与现有快捷键冲突。 (#147)
+- **iCloud 不可用时安全回退** — 启用 iCloud 配置存储时，若 iCloud 不可用会弹出提示并恢复本地存储设置。 (#147)
+
+### 贡献者
+
+- @a51095 — 反馈托管配置布局、延迟测速快捷键和 iCloud 不可用时的行为。 (#147)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Delay Tests Stay Manual** — Removed the startup retry for delay tests. Benchmarks now run only when explicitly started by the user, avoiding extra network requests while ClashFX and its configuration are still starting. (#147)
+- **Config Menu Is Clearer** — Renamed Profile Mixin to Config Patch (Profile Mixin), grouped it with Config Editor and current-config actions, and renamed external-resource updates to clarify that they refresh rule and proxy providers rather than managed configurations. (#147)
+
+### Contributors
+
+- @a51095 — Reported the startup delay-test behavior and the unclear configuration menu labels. (#147)
+
+---
+
+### 修复
+
+- **延迟测速保持手动执行** — 移除启动后的延迟测速重试；测速只在用户手动发起时执行，避免 ClashFX 和配置刚启动时产生额外网络请求。 (#147)
+- **配置菜单更清晰** — 将 Profile Mixin 更名为“配置补丁（Profile Mixin）”，与配置编辑器和当前配置操作归组；同时将外部资源更新明确为规则与代理提供者资源更新，避免与托管配置混淆。 (#147)
+
+### 贡献者
+
+- @a51095 — 反馈启动后延迟测速行为及配置菜单文案不清晰的问题。 (#147)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Config Selection Follows Local and iCloud Storage** — Local and iCloud storage now remember their selected configurations independently. Switching storage restores the target location's previous selection, or chooses a non-default configuration when no selection has been saved yet. (#129)
+- **Delay Results Return After Restart** — After a manual delay benchmark, ClashFX remembers the active configuration and test parameters, then silently repeats the benchmark once after the next matching startup. (#147)
+- **Proxy Speed Is Clearly Labeled** — The menu-bar indicator now identifies itself as ClashFX proxy traffic and explains that it does not represent total system network speed. (#147)
+- **Optional Dock Icon Hiding** — General settings now includes a disabled-by-default "Hide Dock Icon" switch. When enabled, ClashFX remains available from the menu bar without appearing in the Dock. (#147)
+
+### Contributors
+
+- @a51095 — Verified storage switching, startup delay results, proxy speed semantics, and the optional Dock icon behavior. (#129, #147)
+
+---
+
+### 修复
+
+- **配置选择跟随本地与 iCloud 存储** — 本地与 iCloud 现在会分别记住各自选中的配置；切换存储位置后会恢复目标位置上次的选择，尚未保存选择时则优先加载非默认配置。 (#129)
+- **重启后恢复延迟测速结果** — 手动延迟测速后，ClashFX 会记住当前配置和测速参数，并在下次启动且配置相同时静默自动测速一次。 (#147)
+- **代理速率语义更明确** — 菜单栏指标现明确标识为 ClashFX 代理流量，并说明它不代表电脑整体网络速率。 (#147)
+- **可选隐藏 Dock 图标** — 通用设置新增默认关闭的“隐藏 Dock 图标”开关；开启后，ClashFX 可仅通过菜单栏访问而不显示在 Dock 中。 (#147)
+
+### 贡献者
+
+- @a51095 — 验证配置存储切换、启动后延迟测速、代理速率语义及可选 Dock 图标行为。 (#129, #147)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **iCloud Config Switching Refreshes Immediately** — Switching the iCloud config-storage option now refreshes the configuration list and reloads a valid configuration from the newly selected storage location without requiring an app restart. (#129)
+- **Remote Config Renames Keep Working** — When a subscription replaces its placeholder filename with the server-provided name, ClashFX now updates the active-config and remembered proxy references and removes the obsolete file. (#129)
+- **Settings Section Headers Are Clearer** — Section headers now sit above their cards with consistent spacing, use a distinct secondary style, and no longer clip or run into the preceding section. General settings also adds meaningful headers for application, network automation, connectivity test, and bypass-rule sections. (#129)
+- **Copy Shortcuts No Longer Intercept Command-C** — The two copy-command shortcuts now default to Control-Option-C and Control-Option-Shift-C. Existing Command-C and Option-Command-C bindings are migrated automatically once so normal system copy works again. (#129)
+- **Enhanced Mode Has a Real Global Shortcut** — Enhanced Mode now uses a configurable global shortcut with the default Control-Option-E, avoiding the earlier Command-Shift-E conflict with Xcode. (#129)
+
+### Contributors
+
+- @a51095 — Reported settings section-header layout issues and the Command-C shortcut conflict. (#129)
+
+---
+
+### 修复
+
+- **iCloud 配置切换立即刷新** — 切换“将配置文件存储在 iCloud 中”后，现在会立即刷新配置列表，并从新的存储位置重载可用配置，无需重启应用。 (#129)
+- **远程配置改名后仍可正常使用** — 订阅将占位文件名替换为服务端提供的名称时，ClashFX 现在会同步更新当前配置和已记忆的代理选择，并清理旧文件。 (#129)
+- **设置分组标题更清晰** — 分组标题现在会在卡片上方保留统一间距，采用与内容不同的次级样式，不再被裁切或紧贴上一分区。通用设置还补充了应用设置、网络自动化、连通性测试和绕过规则等标题。 (#129)
+- **复制快捷键不再拦截 Command-C** — 两个复制代理命令的默认快捷键分别调整为 `Control-Option-C` 与 `Control-Option-Shift-C`；已保存的 `Command-C` 和 `Option-Command-C` 会在升级后自动迁移一次，恢复系统普通复制。 (#129)
+- **增强模式拥有真正的全局快捷键** — 增强模式现已使用可配置的全局快捷键，默认 `Control-Option-E`，避开此前与 Xcode 的 `Command-Shift-E` 冲突。 (#129)
+
+### 贡献者
+
+- @a51095 — 反馈设置分组标题布局及 Command-C 快捷键冲突问题。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Settings Window Resizes Freely Again** — Wrapped each Settings tab in a flexible container so fixed-height tab contents no longer block vertical resizing. The Settings window can now be resized from the bottom edges and corners across General, Appearance, Global Shortcuts, and Debug. (#129)
+
+### Contributors
+
+- @a51095 — Verified that v1.1.5.10 still allowed only partial resizing in Settings tabs. (#129)
+
+---
+
+### 修复
+
+- **设置窗口恢复完整缩放** — 设置页各 tab 现在会包在可随窗口伸缩的容器中，固定高度的页面内容不再锁住窗口高度；通用、外观、全局快捷键、调试页都可以通过底部边缘和角落调整宽高。 (#129)
+
+### 贡献者
+
+- @a51095 — 验证 v1.1.5.10 设置页仍只能部分缩放的问题。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Appearance Settings Fills the Window on Open** — Fixed an initial layout pass issue where the Appearance settings view could leave a dark strip at the bottom until the window was manually resized. (#129)
+
+### Contributors
+
+- @a51095 — Reported that v1.1.5.9 could still show a partially covered bottom area until resizing the Settings window. (#129)
+
+---
+
+### 修复
+
+- **外观设置打开后立即填满窗口** — 修复外观设置页首次打开时底部可能出现黑色遮挡区域、手动调整窗口大小后才恢复的问题。 (#129)
+
+### 贡献者
+
+- @a51095 — 反馈 v1.1.5.9 设置窗口打开后底部仍有局部遮挡，手动放大后才消失。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Settings Window Resizing Works Again** — The Settings window now stays resizable while clamping only its maximum size and current frame to the visible screen area. It also reapplies the clamp after restoring a previously saved window size, so old oversized settings windows no longer slip behind the Dock. (#129)
+
+### Contributors
+
+- @a51095 — Verified that v1.1.5.8 still restored an oversized, non-resizable Settings window. (#129)
+
+---
+
+### 修复
+
+- **设置窗口恢复可缩放** — 设置窗口现在只限制最大尺寸和当前窗口位置，不再切换 tab 时强制回固定高度；同时会在恢复历史窗口尺寸后再次按屏幕可见区域校正，避免旧的大窗口继续被 Dock 遮挡。 (#129)
+
+### 贡献者
+
+- @a51095 — 验证 v1.1.5.8 仍会恢复过大的、不可缩放的设置窗口。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Settings Window Stays Above the Dock** — Settings now clamps its window frame to the current screen's visible area when opening or switching tabs, accounting for the titlebar/tab chrome so the Appearance tray-menu options remain reachable without entering full screen. (#129)
+
+### Contributors
+
+- @a51095 — Reported the Appearance settings window overlapping the Dock in normal window mode. (#129)
+
+---
+
+### 修复
+
+- **设置窗口不再被 Dock 遮挡** — 打开设置或切换设置 tab 时，现在会按当前屏幕可见区域重新限制窗口高度，并计入标题栏 / tab 栏高度；“外观”页底部的菜单栏选项无需全屏也能滚动查看。 (#129)
+
+### 贡献者
+
+- @a51095 — 反馈“外观”设置页普通窗口模式下底部被 Dock 遮挡的问题。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Web Dashboard No Longer Shows a White Top Bar in Full Screen** — The Dashboard menu window now uses a standard content layout instead of a transparent full-size titlebar with an empty macOS toolbar, and removes the old 28px dashboard padding patch. This keeps the Web dashboard navigation visible when the window enters full screen. (#129)
+
+### Contributors
+
+- @a51095 — Continued verification of the Web dashboard full-screen header issue. (#129)
+
+---
+
+### 修复
+
+- **Web 控制台全屏时不再出现白色顶栏遮挡导航** — “控制台”菜单窗口现在改用标准内容布局，不再使用透明全尺寸标题栏和空 macOS toolbar，并移除了旧的 28px 顶部避让 CSS；进入全屏后 Web dashboard 顶部导航会正常显示在内容区内。 (#129)
+
+### 贡献者
+
+- @a51095 — 持续验证 Web 控制台全屏顶部遮挡问题。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Dashboard Header No Longer Gets Covered in Full Screen** — The native dashboard now uses an in-window header instead of a macOS toolbar, so the Recent/Active Connections switcher and search field stay visible when the dashboard enters full screen. (#129)
+- **Profile Mixin iCloud Sync Uses a Visible File and Reloads Cleanly** — When iCloud config storage is enabled, ClashFX now migrates the local or legacy hidden mixin into a visible `Profile Mixin.yaml` file in iCloud Documents, filters it out of normal config lists, refreshes the config menu, watches the iCloud-selected config, and reloads it without requiring an app restart. (#129)
+- **Subscription Rules Editor Keeps Profile Buckets Out of Normal Configs** — The visual Rules editor now keeps the rule bucket selector disabled on normal subscription configs and only exposes `profile.prepend-rules` / `profile.append-rules` when editing Profile Mixin, avoiding accidental edits to Profile-only rule buckets from the config editor. (#129)
+
+### Contributors
+
+- @a51095 — Continued verification for Profile Mixin, iCloud sync, and dashboard full-screen regressions. (#129)
+
+---
+
+### 修复
+
+- **控制台全屏时顶部不再被遮挡** — 原生控制台现在使用窗口内容内的顶部栏，不再依赖 macOS toolbar；进入全屏后，“最近连接 / 活动连接”切换和搜索框会保持可见。 (#129)
+- **Profile Mixin 的 iCloud 同步改为可见文件并会正确重载** — 开启 iCloud 配置存储后，ClashFX 会把本地或旧版隐藏 mixin 迁移为 iCloud Documents 中可见的 `Profile Mixin.yaml`，同时从普通配置列表中过滤该文件，刷新配置菜单，监听 iCloud 当前配置并自动重载，无需重启 App。 (#129)
+- **订阅规则编辑器不再暴露 Profile 专属规则项** — 普通订阅配置的可视化 Rules 编辑器现在会禁用规则项下拉，只保留 `rules`；只有编辑 Profile Mixin 时才显示 `profile.prepend-rules` / `profile.append-rules`，避免从配置编辑器误改 Profile 专属规则桶。 (#129)
+
+### 贡献者
+
+- @a51095 — 持续验证 Profile Mixin、iCloud 同步和控制台全屏遮挡问题。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Profile Mixin Visual Editor Opens the Right Rule Bucket** — When a Profile Mixin only contains `profile.prepend-rules` or `profile.append-rules`, switching from source view to visual mode now automatically selects the non-empty Profile rule bucket instead of showing an empty top-level `rules` table. (#129)
+- **Profile Mixin and Config Editor Can Open Side by Side** — Opening Config Editor while the Profile Mixin editor is already visible now opens or focuses the selected profile editor instead of silently reusing the existing Profile Mixin window. The config picker also includes a Profile Mixin entry for direct navigation. (#129)
+- **Profile Mixin Follows iCloud Config Storage** — When iCloud config storage is enabled, the Profile Mixin file now resolves to the iCloud Documents container as well, so custom mixin rules stay with the rest of the synced configuration set. (#129)
+- **ClashFX Networking Is Direct in Enhanced Mode** — Enhanced Mode now prepends a built-in `PROCESS-NAME,ClashFX Networking,DIRECT` rule before subscription rules so the networking helper is not accidentally routed by a provider rule. (#129)
+- **iCloud Settings Toggle Reflects the User Choice** — The iCloud checkbox now stays responsive to the saved user preference even when iCloud availability temporarily prevents syncing, instead of immediately snapping back based on the effective runtime state.
+
+---
+
+### 修复
+
+- **Profile Mixin 可视化编辑器会自动打开正确规则项** — 当 Profile Mixin 只包含 `profile.prepend-rules` 或 `profile.append-rules` 时，从源码切换到可视化模式会自动选中有内容的 Profile 规则项，不再显示空的顶层 `rules` 表格。 (#129)
+- **Profile Mixin 与配置编辑器可以同时打开** — 已打开 Profile Mixin 编辑器时，再点配置编辑器会打开或聚焦当前配置编辑器，不再静默复用已有的 Profile Mixin 窗口。左上角配置下拉也新增 Profile Mixin 入口，便于直接切换。 (#129)
+- **Profile Mixin 跟随 iCloud 配置存储** — 开启 iCloud 存储配置后，Profile Mixin 文件也会解析到 iCloud Documents 容器，自定义 mixin 规则会和其他配置文件一起同步。 (#129)
+- **Enhanced Mode 会直连 ClashFX Networking** — Enhanced Mode 现在会在订阅规则前插入内置 `PROCESS-NAME,ClashFX Networking,DIRECT`，避免网络子进程被订阅规则错误代理。 (#129)
+- **iCloud 设置开关会反映用户选择** — iCloud 勾选框现在绑定保存的用户偏好；即使 iCloud 暂时不可用导致运行时未启用，也不会在点击后立刻按有效状态弹回。
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Profile Rule Buckets Show in the Visual Editor** — The Rules visual editor now lets you switch between top-level `rules`, `profile.prepend-rules`, and `profile.append-rules`, so Profile Mixin rule directives added in source view are visible and editable without falling back to raw YAML. ClashFX also expands config-embedded `profile.prepend-rules` into runtime rules before subscription rules, and warns when PROCESS rules need Enhanced Mode to match. (#129)
+
+---
+
+### 修复
+
+- **可视化编辑器现在会显示 Profile 规则项** — 规则可视化编辑器新增 `rules`、`profile.prepend-rules`、`profile.append-rules` 切换项；通过源码添加的 Profile Mixin 规则指令现在可以直接查看和编辑，不必退回纯 YAML。ClashFX 也会把配置内的 `profile.prepend-rules` 在运行时展开到订阅规则前面，并在 PROCESS 规则需要 Enhanced Mode 才能命中时写入提示日志。 (#129)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Profile Mixin Rule Directives Now Work** — ClashFX now understands `profile.prepend-rules` and `profile.append-rules` in Profile Mixin files, translating them into real runtime `rules` before loading mihomo. Prepended rules are inserted before the existing rule list so DIRECT/process exclusions are not hidden behind `MATCH`.
+
+---
+
+### 修复
+
+- **Profile Mixin 规则指令现在会生效** — ClashFX 现在会识别 Profile Mixin 中的 `profile.prepend-rules` 和 `profile.append-rules`，并在加载 mihomo 前转换为真正的运行时 `rules`。其中 prepend 规则会插到现有规则列表前面，避免 DIRECT / 进程排除规则被 `MATCH` 吃掉。
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Proxy Recovers After Wake From Sleep** — After macOS wakes from lid-close sleep, ClashFX now delays recovery until the network interface is ready, checks whether the mihomo API is still healthy, and restarts the active proxy mode when needed. This should avoid the state where proxy traffic stays broken until the app is manually restarted. (#142)
+- **Menu Bar Speed Font Restored** — The menu bar upload/download speed text now uses the original ClashFX menu font again, preserving the latest macOS 26 custom drawing optimization while reverting the visual font regression.
+
+### Contributors
+
+- @ayangweb — Reported proxy failure after lid-close sleep/wake (#142)
+
+---
+
+### 修复
+
+- **睡眠唤醒后代理会自动恢复** — macOS 合盖睡眠后唤醒时，ClashFX 现在会等待网络接口就绪，再检查 mihomo API 是否仍健康；如果 core 已无响应，会按当前代理模式走现有恢复路径重启，避免必须手动重启 App 才能恢复代理的问题。 (#142)
+- **菜单栏网速字体已恢复** — 菜单栏上传 / 下载速度文字重新使用 ClashFX 原有菜单字体，同时保留 macOS 26 的自绘优化，回退字体观感回归。
+
+### 贡献者
+
+- @ayangweb — 反馈合盖睡眠唤醒后代理失效的问题 (#142)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Custom Enhanced Mode Now Applies macOS DNS Override** — When `Use Custom Config as-is` is enabled, ClashFX still keeps the selected config file untouched, but Enhanced Mode now runs the same TUN verification and temporary macOS DNS override as the generated-config path. This prevents system DNS from staying on the router DNS while the custom TUN core is running. (#139)
+
+### Contributors
+
+- @mumaxiaozi — Reported that Enhanced Mode with `Use Custom Config as-is` left macOS DNS on the router DNS (#139)
+
+---
+
+### 修复
+
+- **自定义 Enhanced Mode 现在也会接管 macOS DNS** — 开启 `Use Custom Config as-is` 时，ClashFX 仍会保持所选配置文件原样，但 Enhanced Mode 会执行与生成配置路径一致的 TUN 校验和临时 macOS DNS 接管，避免自定义 TUN core 已运行时系统 DNS 仍停留在路由器 DNS。 (#139)
+
+### 贡献者
+
+- @mumaxiaozi — 反馈开启 `Use Custom Config as-is` 的 Enhanced Mode 后 macOS DNS 仍停留在路由器 DNS (#139)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Menu Bar Speed Indicator Is Compact Again** — The menu bar upload/download speed display now uses compact units such as `999KB/s`, a lighter fixed-width font, and competitor-aligned 4pt icon-to-text spacing, reducing the worst-case status item width by about 9pt while keeping the stable-width rendering path. (#137)
+
+### Contributors
+
+- @mumaxiaozi — Reported the [REDACTED_HOST] menu bar icon and speed display taking more space than [REDACTED_HOST] (#137)
+
+---
+
+### 修复
+
+- **菜单栏网速显示重新变紧凑** — 菜单栏上传 / 下载速度现在恢复为 `999KB/s` 这类紧凑单位，改用更细的等宽字体，并将图标与文字间距收紧到接近竞品的 4pt；在保持稳定宽度渲染的同时，最宽状态项约减少 9pt。(#137)
+
+### 贡献者
+
+- @mumaxiaozi — 反馈 [REDACTED_HOST] 菜单栏图标与网速显示相比 [REDACTED_HOST] 占用更宽的问题 (#137)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Menu Bar Speed Text Looks More Balanced** — The menu bar upload/download speed now uses the macOS monospaced-digit menu font, uppercase units, and a space between the number and unit, so labels like `186 B/S` and `1.2 KB/S` no longer look cramped or visually mismatched.
+- **Turn Off All Proxy Modes Is Localized** — The tray-menu shortcut for disabling System Proxy and Enhanced Mode now has localized text and tooltip strings across English, Simplified Chinese, Traditional Chinese, Japanese, and Russian instead of falling back to English in non-English menus.
+
+---
+
+### 修复
+
+- **菜单栏网速文字更协调** — 菜单栏上传 / 下载速度现在使用 macOS 等宽数字菜单字体、全大写单位，并在数字与单位之间加入空格，例如 `186 B/S`、`1.2 KB/S`，避免大小写割裂和数字单位粘连的问题。
+- **“关闭所有代理模式”已补齐多语言** — 用于同时关闭 System Proxy 和 Enhanced Mode 的托盘菜单快捷项，现在在英文、简体中文、繁体中文、日文、俄文下都有对应菜单文字和 tooltip，不再在非英文界面回退显示英文。
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Enhanced Mode Disable Restores Manual Proxy Selection** — Turning Enhanced Mode off now reapplies ClashFX's remembered proxy-group selections after the built-in core reloads, so selector groups no longer fall back to the config default such as Auto Select. (#134)
+
+### Contributors
+
+- @ljssafe — Reported proxy selection falling back to Auto Select after disabling Enhanced Mode (#134)
+
+---
+
+### 修复
+
+- **关闭 Enhanced Mode 后会恢复手动选择的节点** — 关闭 Enhanced Mode 并重载回内置 core 后，ClashFX 现在会重新应用已记住的策略组节点选择，因此不会再回到配置默认项（例如“自动选择”）。(#134)
+
+### 贡献者
+
+- @ljssafe — 反馈关闭 Enhanced Mode 后节点回到自动选择的问题 (#134)
+
+<!-- Previous release notes -->
+
+---
+
+### New Features
+
+- **Profile Mixin for Runtime Configs** — The Config menu now includes a Profile Mixin editor backed by `~/.config/clashfx/.profile_mixin.yaml`. ClashFX applies that mixin at runtime for reloads and Enhanced Mode without rewriting subscription files, so custom proxy groups/rules can survive profile updates. (#129)
+- **Turn Off All Proxy Modes** — A new tray menu action can disable both System Proxy and Enhanced Mode at once, with a tray-menu visibility setting so users can show or hide the shortcut. (#130)
+- **Use Custom Enhanced Mode Config As-Is** — Advanced TUN Settings now has an opt-in switch that starts Enhanced Mode from the selected/runtime config without injecting ClashFX's generated TUN/DNS settings. Users who maintain their own complete `tun`, fake-IP DNS, `external-controller`, and `allow-lan` config can run it directly. (#118)
+
+### Bug Fixes
+
+- **Profile Mixin Has Its Own Tray Menu Visibility Toggle** — The new Profile Mixin menu item now has an independent show/hide switch under Configs instead of sharing the Config Editor visibility setting. (#129)
+- **Menu Bar Speed Display Is More Compact and Stable** — The menu bar upload/download speed now uses a short formatter and fixed-width numeric rendering, reducing wasted menu bar space while preventing nearby icons from jumping as speeds change. (#122, #127)
+
+### Contributors
+
+- @qzxwj — Reported the menu bar status item occupying too much width (#127)
+- @SJH21408 — Requested a one-click way to turn off proxy modes (#130)
+- @ymeng98 — Requested persistent custom profile mixins (#129)
+- @nmmsb666 — Requested custom Enhanced Mode configs to be used as-is (#118)
+
+---
+
+### 新功能
+
+- **运行时 Profile Mixin** — Config 菜单现在提供 Profile Mixin 编辑入口，对应 `~/.config/clashfx/.profile_mixin.yaml`。ClashFX 会在 reload 和 Enhanced Mode 启动时运行时叠加 mixin，不改写订阅原文件，因此自定义策略组 / 规则可以在订阅更新后继续保留。(#129)
+- **一键关闭所有代理模式** — 托盘菜单新增 Turn Off All Proxy Modes，可同时关闭 System Proxy 和 Enhanced Mode，并提供菜单显示开关，方便按需隐藏或展示。(#130)
+- **Enhanced Mode 可直接使用自定义配置** — Advanced TUN Settings 新增默认关闭的 Use Custom Config as-is 开关；开启后，Enhanced Mode 会直接使用当前选择 / 运行时配置启动，不再注入 ClashFX 生成的 TUN/DNS 设置。适合已自行维护完整 `tun`、fake-IP DNS、`external-controller` 与 `allow-lan` 配置的用户。(#118)
+
+### 修复
+
+- **Profile Mixin 现在有独立的托盘菜单显示开关** — 新增的 Profile Mixin 菜单项现在会在 Configs 分组下提供独立显示 / 隐藏按钮，不再复用 Config Editor 的显示设置。(#129)
+- **菜单栏速度显示更紧凑且稳定** — 上传 / 下载速度现在使用更短的菜单栏专用格式和固定宽度数字渲染，减少菜单栏占用，同时避免速度变化时带动旁边图标跳动。(#122, #127)
+
+### 贡献者
+
+- @qzxwj — 反馈菜单栏状态项占用宽度偏大的问题 (#127)
+- @SJH21408 — 建议增加一键关闭代理模式 (#130)
+- @ymeng98 — 建议支持持久的 Profile Mixin (#129)
+- @nmmsb666 — 建议 Enhanced Mode 支持直接使用自定义配置 (#118)
+
+<!-- Previous release notes -->
+
+---
+
+### Bug Fixes
+
+- **Enhanced Mode Now Respects Your `tun.stack` Setting** — The generated `.enhanced_config.yaml` previously hardcoded `stack: mixed`, silently overriding a user-configured `tun.stack`. If your config set `system` (or `gvisor`), the dashboard showed `mixed` and reverting it never stuck. ClashFX now reads `tun.stack` from your source config, validates it against `system`/`gvisor`/`mixed` (case-insensitive), and only falls back to `mixed` when it is unset or invalid. Both the embedded and external core paths use the same resolved value so they never diverge. (#115)
+- **Dashboard Theme & Column Settings Now Persist** — In Enhanced Mode the external controller was assigned a random port on every launch, so the Yacd dashboard origin (`127.0.0.1:PORT`) changed each time and its per-origin `localStorage` (theme, custom columns) appeared to reset. ClashFX now pins a stable controller port (`19090`) and only falls back to a random free port if that port is already taken, keeping the dashboard origin — and your saved preferences — stable across launches. (#115)
+- **Enhanced Mode Startup Is More Resilient** — Enabling Enhanced Mode now automatically retries once when the external core fails to bind (e.g. a transient port race or a leftover `mihomo_core` process holding the controller port). Each retry regenerates the config with a fresh port instead of failing outright, so toggling Enhanced Mode on is far less likely to error out and require a manual retry.
+- **Reopening ClashFX Reveals the Menu Bar Icon** — When ClashFX is already running and you launch it again from Finder, Spotlight, Launchpad, or the Dock, it now pops open the menu bar menu so you can locate the icon — helpful when the menu bar is crowded and the icon is hidden. Thanks @hangox for the suggestion. (#114)
+
+### Contributors
+
+- @hangox — Suggestion to reveal the menu bar item when reopening an already-running app (#114)
+
+---
+
+### 修复
+
+- **增强模式现在会尊重你的 `tun.stack` 设置** — 之前生成的 `.enhanced_config.yaml` 硬编码 `stack: mixed`，会静默覆盖用户配置的 `tun.stack`。如果你配置了 `system`（或 `gvisor`），控制台却显示 `mixed`，改回去也不生效。现在 ClashFX 会从源配置读取 `tun.stack`，按 `system`/`gvisor`/`mixed`（不区分大小写）校验，仅在未设置或非法时才回退到 `mixed`。内置核心与外部核心两条路径使用同一个解析结果，不会再不一致。(#115)
+- **控制台主题与列设置现在能持久保存** — 增强模式下外部控制器每次启动都分配随机端口，导致 Yacd 控制台的 origin（`127.0.0.1:端口`）每次都变，其按 origin 隔离的 `localStorage`（主题、自定义列）看起来被重置。现在 ClashFX 固定使用稳定的控制器端口（`19090`），仅当该端口被占用时才回退到随机空闲端口，从而让控制台 origin —— 以及你保存的偏好 —— 在多次启动间保持稳定。(#115)
+- **增强模式启动更稳健** — 开启增强模式时，若外部核心绑定失败（例如瞬时端口竞争，或残留的 `mihomo_core` 进程仍占用控制器端口），现在会自动重试一次。每次重试都会用新端口重新生成配置，而不是直接报错，因此开启增强模式更不容易失败、无需手动重试。
+- **重新打开 ClashFX 时会弹出菜单栏图标** — 当 ClashFX 已在运行、你又从访达 / Spotlight / 启动台 / Dock 再次打开它时，现在会自动弹出菜单栏菜单，方便你定位图标 —— 在菜单栏拥挤、图标被隐藏时尤其有用。感谢 @hangox 的建议。(#114)
+
+### 贡献者
+
+- @hangox — 建议在重复打开已运行的 app 时显示菜单栏项 (#114)
